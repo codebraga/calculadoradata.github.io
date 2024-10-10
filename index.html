@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Datas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        /* Estilos Gerais */
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+        
+        body {
+
+            font-family: 'Source Code Pro', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --input-bg: #fff;
+            --input-border: #ccc;
+            --btn-bg: #007bff;
+            --btn-hover-bg: #0056b3;
+            --result-bg: #f1f1f1;
+            --footer-bg: #eaeaea;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --input-bg: #2c2c2c;
+            --input-border: #555;
+            --btn-bg: #0d6efd;
+            --btn-hover-bg: #0b5ed7;
+            --result-bg: #333;
+            --footer-bg: #2b2b2b;
+        }
+
+        .container {
+            background-color: var(--input-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-switch {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: var(--btn-bg);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--btn-hover-bg);
+        }
+
+        .result {
+            background-color: var(--result-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+
+        .toggle-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .toggle-text {
+            font-size: 16px;
+        }
+
+        /* Footer discreto e fixo */
+        footer {
+            background-color: var(--footer-bg);
+            color: var(--text-color);
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--btn-bg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="theme-switch" id="theme-toggle">
+            <span class="toggle-icon"><i class="fa-solid fa-sun"></i></span>
+        </div>
+        <h1>Calculadora de Dias entre Datas</h1>
+        <form id="date-form">
+            <label for="start-date">De:</label>
+            <input type="date" id="start-date" required>
+
+            <label for="end-date">Até:</label>
+            <input type="date" id="end-date" required>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="include-start">
+                <label for="include-start">Incluir data de início</label>
+            </div>
+
+            <button type="button" id="calculate-btn">Calcular</button>
+        </form>
+
+        <div class="result">
+            <h2>Resultado:</h2>
+            <p id="days-result">+0 dias</p>
+            <p id="years-months-days-result">0 anos, 0 meses, 0 dias</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>Desenvolvido por <a href="https://www.youtube.com/@nos2naestradabr" target="_blank">Nós 2 na Estrada</a></p>
+    </footer>
+
+    <script>
+        document.getElementById('calculate-btn').addEventListener('click', function() {
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(document.getElementById('end-date').value);
+            const includeStart = document.getElementById('include-start').checked;
+
+            if (isNaN(startDate) || isNaN(endDate)) {
+                alert('Por favor, insira datas válidas.');
+                return;
+            }
+
+            if (endDate < startDate) {
+                alert('A data final deve ser maior ou igual à data inicial.');
+                return;
+            }
+
+            let dayDifference = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+
+            if (includeStart) {
+                dayDifference += 1;
+            }
+
+            document.getElementById('days-result').textContent = `+${dayDifference} dias`;
+
+            let years = endDate.getFullYear() - startDate.getFullYear();
+            let months = endDate.getMonth() - startDate.getMonth();
+            let days = endDate.getDate() - startDate.getDate();
+
+            if (days < 0) {
+                months--;
+                const lastMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+                days += lastMonth.getDate();
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            document.getElementById('years-months-days-result').textContent = `${years} anos, ${months} meses, ${days} dias`;
+        });
+
+        // Dark Theme
+        const themeToggle = document.getElementById('theme-toggle');
+        let isDarkMode = false;
+
+        themeToggle.addEventListener('click', function() {
+            if (isDarkMode) {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggle.innerHTML = '<span class="toggle-icon"><i class="fa-solid fa-sun"></i></span>';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<span class="toggle-icon"><i class="fa-solid fa-moon"></i></span>';
+            }
+            isDarkMode = !isDarkMode;
+        });
+    </script>
+</body>
+</html>
